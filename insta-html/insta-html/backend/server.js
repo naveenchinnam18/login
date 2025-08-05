@@ -4,9 +4,10 @@ const cors = require('cors');
 const path = require('path');
 const bodyParser = require('body-parser');
 const User = require('./models/User');
+require('dotenv').config(); // ✅ Load environment variables
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000; // ✅ Use PORT from .env if available
 
 // Middleware
 app.use(cors());
@@ -20,12 +21,15 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
-// MongoDB connection
-mongoose.connect('mongodb://127.0.0.1:27017/loginDB')
+// ✅ MongoDB connection using .env
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
   .then(() => console.log('✅ MongoDB connected'))
   .catch((err) => console.error('❌ MongoDB error:', err));
 
-// Login route
+// ✅ Login route
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
