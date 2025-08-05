@@ -4,7 +4,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value.trim();
 
-  const response = await fetch('https://localhost:5000/login', {
+  const response = await fetch('https://https://login-2-tq44.onrender.com/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
