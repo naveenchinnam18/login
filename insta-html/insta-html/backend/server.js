@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: 'https://insta-2.onrender.com', // ✅ Update this to your deployed frontend URL
+  origin: 'https://insta-2-um9z.onrender.com', // ✅ Update this to your deployed frontend URL
   methods: ['POST'],
   credentials: false
 }));
