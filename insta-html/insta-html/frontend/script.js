@@ -20,7 +20,7 @@
       const password = document.getElementById('password').value.trim();
 
       try {
-        const response = await fetch('https://nav-53th.onrender.com/login', {
+        const response = await fetch('https://gram-sl87.onrender.com/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
