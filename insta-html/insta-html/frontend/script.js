@@ -1,49 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Login</title>
-</head>
-<body>
-  <h1>Login</h1>
-  
-  <form id="loginForm" method="POST">
-    <input type="text" id="username" placeholder="Username" required />
-    <input type="password" id="password" placeholder="Password" required />
-    <button type="submit">Login</button>
-  </form>
+document.addEventListener('DOMContentLoaded', () => {
+  const loginForm = document.getElementById('loginForm');
+  const messageDiv = document.getElementById('message');
 
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-      e.preventDefault(); // Prevent form refresh
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault(); // Prevent the default form refresh
 
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
+    // Clear previous messages
+    messageDiv.style.display = 'none';
+    messageDiv.textContent = '';
 
-      try {
-        const response = await fetch('https://gram-sl87.onrender.com/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ username, password })
-        });
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
 
-        const result = await response.json();
+    // Make sure you replace this URL with your actual deployed backend URL
+    const backendUrl = 'https://gram-sl87.onrender.com/login';
 
-        if (response.ok) {
-          alert('✅ Login Successful!');
-          document.getElementById('loginForm').reset();
-          // Optional: Redirect after successful login
-          // window.location.href = '/dashboard.html';
-        } else {
-          alert('❌ Login Failed: ' + (result.message || 'Invalid credentials'));
-        }
-      } catch (err) {
-        alert('❌ Error: ' + err.message);
-        console.error(err);
+    try {
+      const response = await fetch(backendUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      });
+
+      // We use response.json() to get the JSON body content
+      const result = await response.json();
+
+      // Check if the response was successful (HTTP status 200-299)
+      if (response.ok) {
+        displayMessage(result.message, 'success');
+        loginForm.reset(); // Clear the form fields
+      } else {
+        // If the server returned an error (e.g., 401, 500), display it
+        displayMessage(result.message || 'An unknown error occurred.', 'error');
       }
-    });
-  </script>
-</body>
-</html>
+    } catch (err) {
+      // This catches network errors or issues with the fetch itself
+      console.error('Fetch Error:', err);
+      displayMessage('Could not connect to the server. Please try again later.', 'error');
+    }
+  });
+
+  function displayMessage(message, type) {
+    messageDiv.textContent = message;
+    messageDiv.className = type; // 'success' or 'error'
+    messageDiv.style.display = 'block';
+  }
+});
