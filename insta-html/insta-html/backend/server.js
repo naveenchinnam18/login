@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const bodyParser = require('body-parser');
+const bodyParser = require('body-parser'); // Correctly require the package
 const User = require('./models/User');
 require('dotenv').config();
 
@@ -23,10 +23,11 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ['POST'],
+  methods: ['GET', 'POST'], // Explicitly allow GET for the health check
   credentials: false
 }));
 
+// ✅ Middleware to parse JSON request bodies
 app.use(bodyParser.json());
 
 // ✅ MongoDB connection
@@ -39,22 +40,50 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // ✅ Health check route
 app.get('/', (req, res) => {
-  res.send('Backend is running ✅');
+  res.status(200).json({ status: 'ok', message: 'Backend is running ✅' });
 });
 
-// ✅ Login route
+// ✅ Login route with improved validation and security logic
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
+  console.log(`Login attempt for username: ${username}`);
+
+  // 1. Basic Input Validation
+  if (!username || !password) {
+    return res.status(400).json({ success: false, message: 'Username and password are required.' });
+  }
 
   try {
-    const user = await User.findOne({ username, password });
-    if (user) {
-      res.status(200).json({ message: 'Login successful' });
-    } else {
-      res.status(401).json({ message: 'Invalid credentials' });
+    // 2. Find user by username first (better practice)
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      console.log(`Login failed: User '${username}' not found.`);
+      // Send a generic error message to prevent username enumeration
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
+
+    // 3. Compare the password
+    //
+    // CRITICAL SECURITY NOTE: You should NEVER store plain text passwords.
+    // In a real app, you would hash the password during registration and compare the hash here.
+    // Example using a library like 'bcrypt':
+    // const isMatch = await bcrypt.compare(password, user.password);
+    // if (!isMatch) { ... }
+    //
+    if (user.password !== password) {
+      console.log(`Login failed: Incorrect password for user '${username}'.`);
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+
+    // 4. Success
+    console.log(`✅ Login successful for user: ${username}`);
+    res.status(200).json({ success: true, message: 'Login successful' });
+
   } catch (err) {
-    res.status(500).json({ error: 'Login error' });
+    // 5. Catch any server errors
+    console.error('❌ Server error during login process:', err);
+    res.status(500).json({ success: false, message: 'An internal server error occurred.' });
   }
 });
 
