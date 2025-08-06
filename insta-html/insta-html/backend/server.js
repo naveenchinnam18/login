@@ -8,15 +8,27 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// ✅ Allow multiple origins using a function
+const allowedOrigins = [
+  'https://insta-2-um9z.onrender.com',
+  'https://ins-33w0.onrender.com'
+];
+
 app.use(cors({
-  origin: 'https://insta-2-um9z.onrender.com', 'https://ins-33w0.onrender.com' // ✅ Update this to your deployed frontend URL
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['POST'],
   credentials: false
 }));
+
 app.use(bodyParser.json());
 
-// MongoDB connection
+// ✅ MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -24,12 +36,12 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log('✅ MongoDB connected'))
 .catch((err) => console.error('❌ MongoDB error:', err));
 
-// Health check route
+// ✅ Health check route
 app.get('/', (req, res) => {
   res.send('Backend is running ✅');
 });
 
-// Login route (verify credentials)
+// ✅ Login route
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -45,7 +57,7 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Start server
+// ✅ Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
