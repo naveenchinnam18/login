@@ -11,7 +11,8 @@ const PORT = process.env.PORT || 5000;
 // ✅ Allow multiple origins using a function
 const allowedOrigins = [
   'https://insta-2-um9z.onrender.com',
-  'https://ins-33w0.onrender.com'
+  'https://ins-33w0.onrender.com',
+  'https://gram-sl87.onrender.com'
 ];
 
 app.use(cors({
